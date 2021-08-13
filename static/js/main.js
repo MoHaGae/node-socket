@@ -1,4 +1,15 @@
-const socket = io("https://00b65a7f3f87.ngrok.io");
+const socket = io("https://79aab1eb1063.ngrok.io");
+
+/* 게임 진행에 필요한 상수 */
+const READY_STATUS = 'ready'; // 게임방 대기 상태
+const STARTING_STATUS = 'starting'; // 게임중인 상태
+const FLAG  = {
+    success: "success",
+    fail: "fail",
+    valid: "vailld",
+    invalid: "invalid",
+    full: "full"
+}
 
 /**
  * Common Setting
@@ -34,7 +45,27 @@ const initNickName = () => {
         }
             
         socket.emit("setNickname", { nickname: nicknameInput.value });
-        initChat();
+
+        socket.on("resultSetNickname", (data) => {
+            if(data.result === FLAG.success) {
+                socket.emit("requestJoinRoom");
+
+                socket.on("resultJoinRoom", (data) => {
+                    if(data.result === FLAG.success) {
+                        socket.on("startGame", (_) => {
+
+                        });
+                    } else {
+                        socket.on("joinRoom", () => {
+                            socket.on("startGame", (_) => {
+
+                            });
+                        });
+                    }
+                });
+            }
+        });        
+        // initChat();
     });
 
     nicknameBox.removeAttribute(HIDDEN_STR);
